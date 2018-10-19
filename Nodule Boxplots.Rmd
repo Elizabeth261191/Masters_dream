@@ -1,0 +1,51 @@
+---
+title: "Nodules Boxplots October"
+author: "Elizabeth"
+date: "19 October 2018"
+output: html_document
+---
+#nodule Weight and box plots 
+
+```{r}
+#importing data
+library(dplyr)
+library(readr)
+LabHarvestR <- read_csv("LabHarvestR.csv")
+```
+
+```{r}
+#making things factors
+LabHarvestR$Treatment <- as.factor(LabHarvestR$Treatment)
+LabHarvestR$Harvest<-as.factor(LabHarvestR$Harvest)
+LabHarvestR$Tag<-as.factor(LabHarvestR$Tag)
+```
+
+```{r}
+#Subsetting for Boxplots
+LabHarvest_H1 <- subset(LabHarvestR,Harvest=="1")
+LabHarvest_H1_VS <- subset(LabHarvest_H1,Species=="VS")
+LabHarvest_H1 <- subset(LabHarvestR,Harvest=="1")
+LabHarvest_H1_VE <- subset(LabHarvest_H1,Species=="VE")
+LabHarvest_H2 <- subset(LabHarvestR,Harvest=="2")
+LabHarvest_H2_VS <- subset(LabHarvest_H1,Species=="VS")
+LabHarvest_H2 <- subset(LabHarvestR,Harvest=="2")
+LabHarvest_H2_VE <- subset(LabHarvest_H1,Species=="VE")
+LabHarvest_H3 <- subset(LabHarvestR,Harvest=="3")
+LabHarvest_H3_VS <- subset(LabHarvest_H1,Species=="VS")
+LabHarvest_H3 <- subset(LabHarvestR,Harvest=="3")
+LabHarvest_H3_VE <- subset(LabHarvest_H1,Species=="VE")
+```
+
+```{r}
+#Boxplot for Nodule Number
+plot(Nodule~Treatment,data=LabHarvest_H1_VS, main= "Nodule Count H1 VS")
+plot(Nodule~Treatment,data=LabHarvest_H2_VS, main= "Nodule Count H2 VS")
+plot(Nodule~Treatment,data=LabHarvest_H3_VS, main= "Nodule Count H3 VS")
+```
+
+```{r}
+#Boxplot for Nodule Count 
+plot(Nodules_W~Treatment,data=LabHarvest_H1_VS, main= "Nodule Weight H1 VS")
+plot(Nodules_W~Treatment,data=LabHarvest_H2_VS, main= "Nodule Weight H2 VS")
+plot(Nodules_W~Treatment,data=LabHarvest_H3_VS, main= "Nodule Weight H3 VS")
+```
