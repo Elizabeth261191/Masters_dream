@@ -1,30 +1,54 @@
 ---
-title: "Seedling basics"
+title: "LabExp_Oct"
 author: "Elizabeth"
 date: "19 October 2018"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+#importing data
+```{r}
+library(dplyr)
+library(readr)
+LabHarvest<-read_csv("LabHarvestR.csv")
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+#making things factors
+```{r}
+LabHarvest$Treatment <- as.factor(LabHarvest$Treatment)
+LabHarvest$Harvest<-as.factor(LabHarvest$Harvest)
+LabHarvest$Tag<-as.factor(LabHarvest$Tag)
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+#subseting 
+```{r}
+LabHarvest_H2 <- subset(LabHarvest,Harvest=="2")
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+#linear model 
+```{r}
+LabHarvest_H2_N.m<-lm(AG_DW~Treatment+Nodules_W+Species, data= LabHarvest_H2)
+summary(LabHarvest_H2_N.m)
+```
+
+#checking residuals 
+```{r}
+LabHarvest_H2.resid<-resid(LabHarvest_H2_N.m)
+shapiro.test(LabHarvest_H2.resid)
+bartlett.test(Height~Species, data= LabHarvest_H2)
+```
+
+#general linear model 
+```{r}
+LabHarvest_H2 <- subset(LabHarvest,Harvest=="2")
+LabHarvest_H2_VS<-subset(LabHarvest_H2,Species=="VS")
+LabHarvest_H2_VS.m<-glm(Nodules_Present~Treatment, family=binomial, data=LabHarvest_H2_VS)
+summary(LabHarvest_H2_VS.m)
+``` 
+
+#linear assumption graphs 
+```{r}
+plot(LabHarvest_H2_N.m)
+```
+
+
+
