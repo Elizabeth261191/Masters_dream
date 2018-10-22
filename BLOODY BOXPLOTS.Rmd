@@ -1,0 +1,245 @@
+---
+title: "BOXPLOTS"
+author: "Elizabeth"
+date: "22 October 2018"
+output: html_document
+---
+```{r}
+#importing data
+library(dplyr)
+library(readr)
+LabHarvestR<-read_csv("LabHarvestR.csv")
+```
+
+```{r}
+#making things factors
+LabHarvestR$Treatment <- as.factor(LabHarvestR$Treatment)
+LabHarvestR$Harvest<-as.factor(LabHarvestR$Harvest)
+LabHarvestR$Tag<-as.factor(LabHarvestR$Tag)
+```
+
+```{r}
+#Subsetting for Boxplots
+LabHarvest_H1 <- subset(LabHarvestR,Harvest=="1")
+LabHarvest_H1_VS <- subset(LabHarvest_H1,Species=="VS")
+
+LabHarvest_H1 <- subset(LabHarvestR,Harvest=="1")
+LabHarvest_H1_VE <- subset(LabHarvest_H1,Species=="VE")
+
+LabHarvest_H2 <- subset(LabHarvestR,Harvest=="2")
+LabHarvest_H2_VS <- subset(LabHarvest_H2,Species=="VS")
+
+LabHarvest_H2 <- subset(LabHarvestR,Harvest=="2")
+LabHarvest_H2_VE <- subset(LabHarvest_H2,Species=="VE")
+
+LabHarvest_H3 <- subset(LabHarvestR,Harvest=="3")
+LabHarvest_H3_VS <- subset(LabHarvest_H3,Species=="VS")
+
+LabHarvest_H3 <- subset(LabHarvestR,Harvest=="3")
+LabHarvest_H3_VE <- subset(LabHarvest_H3,Species=="VE")
+```
+
+```{r}
+#Boxplots for Total Dry Biomass
+LabHarvest_H1_VS$AG_DW[LabHarvest_H1_VS$AG_DW==0]<-NA
+LabHarvest_H1_VS_TDB<-LabHarvest_H1_VS[complete.cases(LabHarvest_H1_VS),]
+plot(Total_DW~Treatment,data=LabHarvest_H1_VS, main= "Total DW H1 VS")
+summary(LabHarvest_H1_VS_TDB)
+
+LabHarvest_H1_VE$AG_DW[LabHarvest_H1_VE$AG_DW==0]<-NA
+LabHarvest_H1_VE_TDB<-LabHarvest_H1_VE[complete.cases(LabHarvest_H1_VE),]
+plot(Total_DW~Treatment,data=LabHarvest_H1_VE, main= "Total DW H1 VE")
+summary(LabHarvest_H1_VE_TDB)
+
+LabHarvest_H2_VS$AG_DW[LabHarvest_H2_VS$AG_DW==0]<-NA
+LabHarvest_H2_VS_TDB<-LabHarvest_H2_VS[complete.cases(LabHarvest_H2_VS),]
+plot(Total_DW~Treatment,data=LabHarvest_H2_VS, main= "Total DW H2 VS")
+summary(LabHarvest_H2_VS_TDB)
+
+LabHarvest_H2_VE$AG_DW[LabHarvest_H2_VE$AG_DW==0]<-NA
+LabHarvest_H2_VE_TDB<-LabHarvest_H2_VE[complete.cases(LabHarvest_H2_VE),]
+plot(Total_DW~Treatment,data=LabHarvest_H2_VE, main= "Total DW H2 VE")
+summary(LabHarvest_H2_VE_TDB)
+
+LabHarvest_H3_VS$AG_DW[LabHarvest_H3_VS$AG_DW==0]<-NA
+LabHarvest_H3_VS_TDB<-LabHarvest_H3_VS[complete.cases(LabHarvest_H3_VS),]
+plot(Total_DW~Treatment,data=LabHarvest_H3_VS, main= "Total DW H3 VS")
+summary(LabHarvest_H3_VS_TDB)
+
+LabHarvest_H3_VE$AG_DW[LabHarvest_H3_VE$AG_DW==0]<-NA
+LabHarvest_H3_VE_TDB<-LabHarvest_H3_VE[complete.cases(LabHarvest_H3_VE),]
+plot(Total_DW~Treatment,data=LabHarvest_H3_VE, main= "Total DW H3 VE")
+summary(LabHarvest_H3_VE_TDB)
+```
+
+```{r}
+#Boxplots for Height
+LabHarvest_H1_VS$Height[LabHarvest_H1_VS$Height==0]<-NA
+LabHarvest_H1_VS_H<-LabHarvest_H1_VS[complete.cases(LabHarvest_H1_VS),]
+plot(Height~Treatment,data=LabHarvest_H1_VS, main= "Height H1 VS")
+summary(LabHarvest_H1_VS_H)
+
+LabHarvest_H1_VS$Height[LabHarvest_H1_VS$Height==0]<-NA
+LabHarvest_H1_VE_H<-LabHarvest_H1_VE[complete.cases(LabHarvest_H1_VE),]
+plot(Height~Treatment,data=LabHarvest_H1_VE, main= "Height H1 VE")
+summary(LabHarvest_H1_VE_H)
+
+LabHarvest_H2_VS$Height[LabHarvest_H2_VS$Height==0]<-NA
+LabHarvest_H2_VS_H<-LabHarvest_H2_VS[complete.cases(LabHarvest_H2_VS),]
+plot(Height~Treatment,data=LabHarvest_H2_VS, main= "Height H2 VS")
+summary(LabHarvest_H2_VS_H)
+
+LabHarvest_H2_VE$Height[LabHarvest_H2_VE$Height==0]<-NA
+LabHarvest_H2_VE_H<-LabHarvest_H2_VE[complete.cases(LabHarvest_H2_VE),]
+plot(Height~Treatment,data=LabHarvest_H2_VE, main= "Height H2 VE")
+summary(LabHarvest_H2_VE_H)
+
+LabHarvest_H3_VS$Height[LabHarvest_H3_VS$Height==0]<-NA
+LabHarvest_H3_VS_H<-LabHarvest_H3_VS[complete.cases(LabHarvest_H3_VS),]
+plot(Height~Treatment,data=LabHarvest_H3_VS, main= "Height H3 VS")
+summary(LabHarvest_H3_VS_H)
+
+LabHarvest_H3_VE$Height[LabHarvest_H3_VE$Height==0]<-NA
+LabHarvest_H3_VE_H<-LabHarvest_H3_VE[complete.cases(LabHarvest_H3_VE),]
+plot(Height~Treatment,data=LabHarvest_H3_VE, main= "Height H3 VE")
+summary(LabHarvest_H3_VE_H)
+```
+
+```{r}
+#Boxplots for Below ground biomass
+LabHarvest_H1_VS$BG_DW[LabHarvest_H1_VS$BG_DW==0]<-NA
+LabHarvest_H1_VS_BGDW<-LabHarvest_H1_VS[complete.cases(LabHarvest_H1_VS),]
+plot(BG_DW~Treatment,data=LabHarvest_H1_VS, main= "Below DW H1 VS")
+summary(LabHarvest_H1_VS_BGDW)
+
+LabHarvest_H1_VE$BG_DW[LabHarvest_H1_VE$BG_DW==0]<-NA
+LabHarvest_H1_VE_BGDW<-LabHarvest_H1_VE[complete.cases(LabHarvest_H1_VE),]
+plot(BG_DW~Treatment,data=LabHarvest_H1_VE, main= "Below DW H1 VE")
+summary(LabHarvest_H1_VE_BGDW)
+
+LabHarvest_H2_VS$BG_DW[LabHarvest_H2_VS$BG_DW==0]<-NA
+LabHarvest_H2_VS_BGDW<-LabHarvest_H2_VS[complete.cases(LabHarvest_H2_VS),]
+plot(BG_DW~Treatment,data=LabHarvest_H2_VS,main= "Below DW H2 VS")
+summary(LabHarvest_H2_VS_BGDW)
+
+LabHarvest_H2_VE$BG_DW[LabHarvest_H2_VE$BG_DW==0]<-NA
+LabHarvest_H2_VE_BGDW<-LabHarvest_H2_VE[complete.cases(LabHarvest_H2_VE),]
+plot(BG_DW~Treatment,data=LabHarvest_H2_VE,main= "Below DW H2 VE")
+summary(LabHarvest_H2_VE_BGDW)
+
+LabHarvest_H3_VS$BG_DW[LabHarvest_H3_VS$BG_DW==0]<-NA
+LabHarvest_H3_VS_BGDW<-LabHarvest_H3_VS[complete.cases(LabHarvest_H3_VS),]
+plot(BG_DW~Treatment,data=LabHarvest_H3_VS,main= "Below DW H3 VS")
+summary(LabHarvest_H3_VS_BGDW)
+
+LabHarvest_H3_VE$BG_DW[LabHarvest_H3_VE$BG_DW==0]<-NA
+LabHarvest_H3_VE_BGDW<-LabHarvest_H3_VE[complete.cases(LabHarvest_H3_VE),]
+plot(BG_DW~Treatment,data=LabHarvest_H3_VE, main= "Below DW H3 VE")
+summary(LabHarvest_H3_VE_BGDW)
+```
+
+```{r}
+#Boxplots for Leaf dry weight
+LabHarvest_H1_VS$Leaves_DW[LabHarvest_H1_VS$Leaves_DW==0]<-NA
+LabHarvest_H1_VS_LDW<-LabHarvest_H1_VS[complete.cases(LabHarvest_H1_VS),]
+plot(Leaves_DW~Treatment,data=LabHarvest_H1_VS, main= "Leaf DW H1 VS")
+summary(LabHarvest_H1_VS_LDW)
+
+LabHarvest_H1_VE$Leaves_DW[LabHarvest_H1_VE$Leaves_DW==0]<-NA
+LabHarvest_H1_VE_LDW<-LabHarvest_H1_VE[complete.cases(LabHarvest_H1_VE),]
+plot(Leaves_DW~Treatment,data=LabHarvest_H1_VE,main= "Leaf DW H1 VE")
+summary(LabHarvest_H1_VE_LDW)
+
+LabHarvest_H2_VS$Leaves_DW[LabHarvest_H2_VS$Leaves_DW==0]<-NA
+LabHarvest_H2_VS_LDW<-LabHarvest_H2_VS[complete.cases(LabHarvest_H2_VS),]
+plot(Leaves_DW~Treatment,data=LabHarvest_H3_VS,main= "Leaf DW H2 VS")
+summary(LabHarvest_H2_VS_LDW)
+
+LabHarvest_H2_VE$Leaves_DW[LabHarvest_H2_VE$Leaves_DW==0]<-NA
+LabHarvest_H2_VE_LDW<-LabHarvest_H2_VE[complete.cases(LabHarvest_H2_VE),]
+plot(Leaves_DW~Treatment,data=LabHarvest_H2_VE, main= "Leaf DW H2 VE")
+summary(LabHarvest_H2_VE_LDW)
+
+LabHarvest_H3_VS$Leaves_DW[LabHarvest_H3_VS$Leaves_DW==0]<-NA
+LabHarvest_H3_VS_LDW<-LabHarvest_H3_VS[complete.cases(LabHarvest_H3_VS),]
+plot(Leaves_DW~Treatment,data=LabHarvest_H3_VS,main= "Leaf DW H3 VS")
+summary(LabHarvest_H3_VS_LDW)
+
+LabHarvest_H3_VE$Leaves_DW[LabHarvest_H3_VE$Leaves_DW==0]<-NA
+LabHarvest_H3_VE_LDW<-LabHarvest_H3_VE[complete.cases(LabHarvest_H3_VE),]
+plot(Leaves_DW~Treatment,data=LabHarvest_H3_VE, main= "Leaf DW H3 VE")
+summary(LabHarvest_H3_VE_LDW)
+```
+
+```{r}
+#Boxplots for Stem dry weight
+LabHarvest_H1_VS$Stem_DW[LabHarvest_H1_VS$Stem_DW==0]<-NA
+LabHarvest_H1_VS_SDW<-LabHarvest_H1_VS[complete.cases(LabHarvest_H1_VS),]
+plot(Stem_DW~Treatment,data=LabHarvest_H1_VS, main= "Stem DW H1 VS")
+summary(LabHarvest_H1_VS_SDW)
+
+LabHarvest_H1_VE$Stem_DW[LabHarvest_H1_VE$Stem_DW==0]<-NA
+LabHarvest_H1_VE_SDW<-LabHarvest_H1_VE[complete.cases(LabHarvest_H1_VS),]
+plot(Stem_DW~Treatment,data=LabHarvest_H1_VE, main= "Stem DW H1 VE")
+summary(LabHarvest_H1_VE_SDW)
+
+LabHarvest_H2_VS$Stem_DW[LabHarvest_H2_VS$Stem_DW==0]<-NA
+LabHarvest_H2_VS_SDW<-LabHarvest_H2_VS[complete.cases(LabHarvest_H2_VS),]
+plot(Stem_DW~Treatment,data=LabHarvest_H2_VS,main= "Stem DW H2 VS")
+summary(LabHarvest_H2_VS_SDW)
+
+LabHarvest_H2_VE$Stem_DW[LabHarvest_H2_VE$Stem_DW==0]<-NA
+LabHarvest_H2_VE_SDW<-LabHarvest_H2_VE[complete.cases(LabHarvest_H2_VE),]
+plot(Stem_DW~Treatment,data=LabHarvest_H2_VE,main= "Stem DW H2 VE")
+summary(LabHarvest_H2_VE_SDW)
+
+LabHarvest_H3_VS$Stem_DW[LabHarvest_H3_VS$Stem_DW==0]<-NA
+LabHarvest_H3_VS_SDW<-LabHarvest_H3_VS[complete.cases(LabHarvest_H3_VS),]
+plot(Stem_DW~Treatment,data=LabHarvest_H3_VS,main= "Stem DW H3 VS")
+summary(LabHarvest_H3_VS_SDW)
+
+LabHarvest_H3_VE$Stem_DW[LabHarvest_H3_VE$Stem_DW==0]<-NA
+LabHarvest_H3_VE_SDW<-LabHarvest_H3_VE[complete.cases(LabHarvest_H3_VE),]
+plot(Stem_DW~Treatment,data=LabHarvest_H3_VE, main= "Stem DW H3 VE")
+summary(LabHarvest_H3_VE_SDW)
+```
+
+```{r}
+#excluding 0 count nodules & Box plot for Count
+LabHarvest_H1_VS$Nodule[LabHarvest_H1_VS$Nodule==0]<-NA
+LabHarvest_H1_VS_Nod<-LabHarvest_H1_VS[complete.cases(LabHarvest_H1_VS),]
+plot(Nodule~Treatment,data=LabHarvest_H1_VS_Nod, main= "Nodule Count H1 VS")
+summary(LabHarvest_H1_VS_Nod)
+
+LabHarvest_H2_VS$Nodule[LabHarvest_H2_VS$Nodule==0]<-NA
+LabHarvest_H2_VS_Nod<-LabHarvest_H2_VS[complete.cases(LabHarvest_H3_VS),]
+plot(Nodule~Treatment,data=LabHarvest_H2_VS_Nod, main= "Nodule Count H2 VS")
+summary(LabHarvest_H2_VS_Nod)
+
+LabHarvest_H3_VS$Nodule[LabHarvest_H3_VS$Nodule==0]<-NA
+LabHarvest_H3_VS_Nod<-LabHarvest_H3_VS[complete.cases(LabHarvest_H3_VS),]
+plot(Nodule~Treatment,data=LabHarvest_H3_VS_Nod, main= "Nodule Count H3 VS")
+summary(LabHarvest_H3_VS_Nod)
+```
+
+```{r}
+#Boxplot for Nodule Weight 
+LabHarvest_H1_VS$Nodules_W[LabHarvest_H1_VS$Nodules_W==0]<-NA
+LabHarvest_H1_VS_NodW<-LabHarvest_H1_VS[complete.cases(LabHarvest_H1_VS),]
+plot(Nodules_W~Treatment,data=LabHarvest_H1_VS_NodW, main= "Nodule Weight H1 VS")
+summary(LabHarvest_H1_VS_NodW)
+
+LabHarvest_H2_VS$Nodules_W[LabHarvest_H2_VS$Nodules_W==0]<-NA
+LabHarvest_H2_VS_NodW<-LabHarvest_H2_VS[complete.cases(LabHarvest_H2_VS),]
+plot(Nodules_W~Treatment,data=LabHarvest_H2_VS_NodW, main= "Nodule Weight H2 VS")
+summary(LabHarvest_H2_VS_NodW)
+
+LabHarvest_H3_VS$Nodules_W[LabHarvest_H3_VS$Nodules_W==0]<-NA
+LabHarvest_H3_VS_NodW<-LabHarvest_H3_VS[complete.cases(LabHarvest_H3_VS),]
+plot(Nodules_W~Treatment,data=LabHarvest_H3_VS_NodW, main= "Nodule Weight H3 VS")
+summary(LabHarvest_H3_VS_NodW)
+```
+
+
+
+
