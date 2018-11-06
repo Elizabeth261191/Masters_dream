@@ -1,0 +1,131 @@
+title: "H1 basic models part 2"
+author: "Elizabeth"
+date: "6 November 2018"
+output: html_document
+---
+  
+library(readxl)
+LabHarveste <- read_excel("C:/Users/telfo/Desktop/LabHarveste.xlsx")
+View(LabHarveste)
+LabHarvest<-LabHarveste
+library(ggplot2)
+
+install.packages("agridat")
+library(agridat)
+theme.clean <- function(){
+  theme_bw()+
+    theme(axis.text.x = element_text(size = 12, angle = 45, vjust = 1, hjust = 1),
+          axis.text.y = element_text(size = 12),
+          axis.title.x = element_text(size = 14, face = "plain"),             
+          axis.title.y = element_text(size = 14, face = "plain"),             
+          panel.grid.major.x = element_blank(),                                          
+          panel.grid.minor.x = element_blank(),
+          panel.grid.minor.y = element_blank(),
+          panel.grid.major.y = element_blank(),  
+          plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), units = , "cm"),
+          plot.title = element_text(size = 20, vjust = 1, hjust = 0.5),
+          legend.text = element_text(size = 12, face = "italic"),          
+          legend.title = element_blank(),                              
+          legend.position = c(0.9, 0.9))
+}
+
+
+#setting factors
+LabHarvest$Treatment <- as.factor(LabHarvest$Treatment)
+LabHarvest$Harvest<-as.factor(LabHarvest$Harvest)
+LabHarvest$Tag<-as.factor(LabHarvest$Tag)
+
+#subsetting 
+LabHarvest_H1 <- subset(LabHarvest,Harvest=="1")
+LabHarvest_H1_VS <- subset(LabHarvest_H1,Species=="VS")
+LabHarvest_H1 <- subset(LabHarvest,Harvest=="1")
+LabHarvest_H1_VE <- subset(LabHarvest_H1,Species=="VE")
+LabHarvest_H2 <- subset(LabHarvest,Harvest=="2")
+LabHarvest_H2_VS <- subset(LabHarvest_H2,Species=="VS")
+LabHarvest_H2 <- subset(LabHarvest,Harvest=="2")
+LabHarvest_H2_VE <- subset(LabHarvest_H2,Species=="VE")
+LabHarvest_H3 <- subset(LabHarvest,Harvest=="3")
+LabHarvest_H3_VS <- subset(LabHarvest_H3,Species=="VS")
+LabHarvest_H3 <- subset(LabHarvest,Harvest=="3")
+LabHarvest_H3_VE <- subset(LabHarvest_H3,Species=="VE")
+
+
+#Above ground biomass
+(H1_VS_TotalBiomass.p <- ggplot(LabHarvest_H1, aes(Tag, Total_DW)) + geom_boxplot(fill = "#CD3333", alpha = 0.8, colour = "#8B2323") + theme.clean() +  theme(axis.text.x = element_text(size = 12, angle = 0)) + labs(x = "Species & Treatment (%)", y = "Total Dry weight (grams)"))
+
+LabHarvest_H1_AGDW.m<-lm(AG_DW~Treatment+ Species, data= LabHarvest_H1)
+summary(LabHarvest_H1_AGDW.m)
+
+#between species shows nothing 
+
+#Leaf dry weight both Species 
+(H1_VS_TotalBiomass.p <- ggplot(LabHarvest_H1, aes(Tag, Leaves_DW)) +
+    geom_boxplot(fill = "#CD3333", alpha = 0.8, colour = "#8B2323") +
+    theme.clean() +  
+    theme(axis.text.x = element_text(size = 12, angle = 0)) +
+    labs(x = "Species & Treatment (%)", y = "Leaf Dry weight (grams)"))
+LabHarvest_H1_leaf.m<-lm(Leaves_DW~Treatment+ Species, data= LabHarvest_H1)
+summary(LabHarvest_H1_leaf.m)
+shapiro.test(H1_leaf.resid)
+bartlett.test(LabHarvest_H1$Leaves_DW,LabHarvest_H1$Tag)
+
+
+#Below ground biomass
+(H1_BGDW.p <- ggplot(LabHarvest_H1, aes(Tag, BG_DW)) +
+    geom_boxplot(fill = "#CD3333", alpha = 0.8, colour = "#8B2323") +
+    theme.clean() +  
+    theme(axis.text.x = element_text(size = 12, angle = 0)) +
+    labs(x = "Species & Treatment (%)", y = "Root Dry Weight (grams)"))
+
+LabHarvest_H1_root.m<-lm(BG_DW~Treatment+ Species, data= LabHarvest_H1)
+summary(LabHarvest_H1_root.m)
+
+
+#subsetting 
+LabHarvest_H1 <- subset(LabHarvest,Harvest=="1")
+LabHarvest_H1_VS <- subset(LabHarvest_H1,Species=="VS")
+LabHarvest_H1 <- subset(LabHarvest,Harvest=="1")
+LabHarvest_H1_VE <- subset(LabHarvest_H1,Species=="VE")
+LabHarvest_H2 <- subset(LabHarvest,Harvest=="2")
+LabHarvest_H2_VS <- subset(LabHarvest_H2,Species=="VS")
+LabHarvest_H2 <- subset(LabHarvest,Harvest=="2")
+LabHarvest_H2_VE <- subset(LabHarvest_H2,Species=="VE")
+LabHarvest_H3 <- subset(LabHarvest,Harvest=="3")
+LabHarvest_H3_VS <- subset(LabHarvest_H3,Species=="VS")
+LabHarvest_H3 <- subset(LabHarvest,Harvest=="3")
+LabHarvest_H3_VE <- subset(LabHarvest_H3,Species=="VE")
+
+#Total Biomass VS
+LabHarvest_H1_VS_TDW.m<-lm(Total_DW~Treatment, data= LabHarvest_H1_VS)
+summary(LabHarvest_H1_VS_TDW.m)
+
+#Height H1
+(H1_Height.p <- ggplot(LabHarvest_H1, aes(Tag, Height)) +
+    geom_boxplot(fill = "#CD3333", alpha = 0.8, colour = "#8B2323") +
+    theme.clean() +  
+    theme(axis.text.x = element_text(size = 12, angle = 0)) +
+    labs(x = "Species & Treatment (%)", y = "Height (mm)"))
+
+LabHarvest_H1_VS_H.m<-lm(Height~Treatment, data= LabHarvest_H1_VS)
+summary(LabHarvest_H1_VS_H.m)
+HeightVS.resid<-resid(LabHarvest_H1_VS_H.m)
+shapiro.test(HeightVS.resid)
+bartlett.test(LabHarvest_H1_VS$Height,LabHarvest_H1_VS$Treatment)
+
+#height for VE
+LabHarvest_H1_VE_H.m<-lm(Height~Treatment, data= LabHarvest_H1_VE)
+summary(LabHarvest_H1_VE_H.m)
+HeightVE.resid<-resid(LabHarvest_H1_VE_H.m)
+shapiro.test(HeightVE.resid)
+bartlett.test(LabHarvest_H1_VE$Height,LabHarvest_H1_VE$Treatment)
+
+#Height VS and VE H1
+
+LabHarvest_H1_H.m<-lm(Height~Treatment + Species, data= LabHarvest_H1)
+summary(LabHarvest_H1_H.m)
+
+#Nodule presense 
+
+LabHarvest_H1_Nodule.m <-glm(Nodules_Present~Treatment, family= binomial, data=LabHarvest_H1)
+summary(LabHarvest_H1_Nodule.m)
+
