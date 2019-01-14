@@ -1,0 +1,67 @@
+---
+title: "Mixed models for growth"
+author: "Elizabeth"
+date: "10 November 2018"
+output: html_document
+---
+
+```{r}
+#load necessary packages
+library(lattice)
+library(lme4)
+
+library(readxl)
+Babies_height_final_FINAL <- read_excel("C:/Users/telfo/Desktop/Babies height final FINAL.xlsx")
+Height.data<-Babies_height_final_FINAL
+Height.data$Pot <- as.factor(Height.data$Pot)
+```
+
+```{r}
+#one issue to sort is getting a unique identifier for each individual
+Height.data$IndividualID <- as.factor(paste(as.character(Height.data$Tag),as.character(Height.data$Pot),sep="_")) 
+summary(Height.data)
+```
+
+```{r}
+#only using H3 to see if there is a significant relationship
+Height.data_H3 <- subset(Height.data,Harvest=="3")
+tmp <- subset(Height.data,Harvest!="3")
+sort(Height.data_H3$IndividualID[which(Height.data_H3$Pot%in%tmp$IndividualID)])
+```
+
+```{r}
+#now that we have data for individuals that were present at all time points, we can make a simple mixed model to see if growth over time varies by species or treatment
+#check if growth is  linear
+xyplot(Height~Week|IndividualID,data=Height.data_H3,type=c("p","r"))
+#linear growth
+```
+
+```{r}
+#simple linear model if growth varies by species
+lmem0 <- lmer(Height~1 + (1|IndividualID),data=Height.data_H3)
+
+lmem1 <- lmer(Height ~ Species + (1|IndividualID), data=Height.data_H3)
+summary(lmem1)
+
+anova(lmem0,lmem1)
+```
+
+```{r}
+lmem4 <- lmer(Height ~ Species + Treatment + Week + Treatment:Week + Species:Treatment + Species:Week + (1|IndividualID),data=Height.data_H3)
+lmem5 <- lmer(Height ~ Species*Treatment*Week + (1|IndividualID),data=Height.data_H3)
+anova(lmem4,lmem5)
+```
+
+```{r}
+prior2 <- list(R = list(V = 1, nu = 0.002),
+G = list(G1 = list(V = 1, nu = 1, alpha.mu = 0, alpha.v = 10000),
+G2 = list(V = 1, nu = 1, alpha.mu = 0, alpha.v = 10000),
+G3 = list(V = 1, nu = 1, alpha.mu = 0, alpha.v = 10000)))
+                            
+library(MCMCglmm)
+                            
+H3_Height_MCMC <- MCMCglmm(round(Height*100) ~ Week, random = ~IndividualID, family = "poisson", prior = prior2, data = Height.data_H3)
+summary(H3_Height_MCMC)
+plot(betula_m$VCV)
+plot(betula_m$Sol)
+```
