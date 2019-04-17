@@ -1,0 +1,240 @@
+---
+title: "Wits_Anova"
+author: "Elizabeth Telford"
+date: "12 March 2019"
+output: html_document
+---
+
+```{r,echo=FALSE}
+library(ggplot2)
+library(colorspace)
+library(readr)
+library(xtable)
+library(data.table)
+library(car)
+library(stargazer)
+
+
+theme.clean <- function(){
+  theme_bw()+
+    theme(axis.text.x = element_text(size = 12, angle = 0, vjust = 1, hjust = 1),
+          axis.text.y = element_text(size = 12),
+          axis.title.x = element_text(size = 12, face = "plain"),             
+          axis.title.y = element_text(size = 12, face = "plain"),             
+          panel.grid.major.x = element_blank(),                                          
+          panel.grid.minor.x = element_blank(),
+          panel.grid.minor.y = element_blank(),
+          panel.grid.major.y = element_blank(),  
+          plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), units = , "cm"),
+          plot.title = element_text(size = 20, vjust = 1, hjust = 0.5),
+          legend.text = element_text(size = 12, face = "italic"),          
+          legend.title = element_blank(),                              
+          legend.position = c(0.9, 0.9))
+}
+
+wits_iso <- read_csv("C:/Users/s1014831/Desktop/Statistics/Wits data/wits_iso.csv")
+wits_iso$species<- factor(wits_iso$Species, levels=c('VS','VEX','SN'))
+
+Wits_Biomass <- read_csv("C:/Users/s1014831/Desktop/Statistics/Wits data/Wits_Biomass.csv")
+Wits_biomass<-Wits_Biomass
+Wits_biomass$species<- factor(Wits_biomass$species, levels=c('VS','VEX','SN'))
+Wits_biomass$nodule_wt<-as.numeric(Wits_biomass$nodule_wt)
+Wits_biomass$nodule_count<-as.numeric(Wits_biomass$nodule_count)
+Wits_biomass$nodule_count<-na.omit(Wits_biomass$nodule_count)
+```
+
+```{r, results='asis',echo=FALSE}
+stargazer(Wits_biomass)
+```
+
+##15N
+```{r,echo=FALSE}
+hist(wits_iso$delta15N)
+log_15N<-sqrt(wits_iso$delta15N)
+hist(log_15N)
+N15.aov <- aov(log_15N ~ Treatment+Species , data = wits_iso)
+summary(N15.aov)
+model.tables(N15.aov, "means")
+TukeyHSD(N15.aov)
+plot(N15.aov, 1)
+#3 outliers
+leveneTest(log_15N~ Treatment*Species , data = wits_iso)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+##13C
+```{r,echo=FALSE}
+hist(wits_iso$delta13C)
+log_13C<-sqrt(wits_iso$delta13C)
+C13.aov <- aov(delta13C ~ Treatment+Species , data = wits_iso)
+summary(C13.aov)
+model.tables(C13.aov, "means")
+TukeyHSD(C13.aov)
+plot(C13.aov, 1)
+#3 outliers
+leveneTest(delta13C~ Treatment*Species , data = wits_iso)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+##N
+```{r, echo=FALSE}
+#using an ANOVA for H3 N
+hist(wits_iso$N)
+log_N<-log10(wits_iso$N)
+hist(log_N)
+N.aov <- aov(log_N ~ Treatment+Species , data = wits_iso)
+summary(N.aov)
+model.tables(N.aov, "means")
+TukeyHSD(N.aov)
+plot(N.aov, 1)
+#3 outliers
+leveneTest(N~ Treatment*Species , data = wits_iso)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+##c
+```{r, echo=FALSE}
+#using an ANOVA for H3 C
+hist(wits_iso$C)
+#left skewed
+log_C<-sqrt(wits_iso$C)
+hist(log_C)
+#cannot log as the data is negative 
+C.aov <- aov(C ~ Treatment+Species , data = wits_iso)
+summary(C.aov)
+model.tables(C.aov, "means")
+TukeyHSD(C.aov)
+plot(C.aov, 1)
+#3 outliers
+leveneTest(C~ Treatment*Species , data = wits_iso)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+##C:N
+```{r,echo=FALSE}
+#using an ANOVA for H3 C:N ratio
+hist(wits_iso$CN_ratio)
+#left skewed
+log_CN<-sqrt(wits_iso$CN_ratio)
+hist(log_CN)
+CN.aov <- aov(log_CN ~ Treatment+Species , data = wits_iso)
+summary(CN.aov)
+model.tables(CN.aov, "means")
+TukeyHSD(CN.aov)
+plot(CN.aov, 1)
+#3 outliers
+leveneTest(log_CN~ Treatment*Species , data = wits_iso)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+__Nodule Count__
+```{r,results='asis',echo=FALSE}
+hist(Wits_biomass$nodule_count)
+log_N<-sqrt(Wits_biomass$nodule_count)
+hist(log_N)
+N.aov <- aov(log_N~ treatment+species , data = Wits_biomass)
+summary(N.aov)
+TukeyHSD(N.aov)
+model.tables(N.aov, "means")
+plot(N.aov, 1)
+leveneTest(nodule_count  ~  treatment*species, data = Wits_biomass)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+__Nodule Weight__
+```{r,results='asis',echo=FALSE}
+hist(Wits_biomass$nodule_wt)
+log_N<-sqrt(Wits_biomass$nodule_wt)
+hist(log_N)
+NW.aov <- aov(log_N~ treatment+species+ (1|plot_rep) , data = Wits_biomass)
+summary(NW.aov)
+TukeyHSD(NW.aov)
+model.tables(NW.aov, "means")
+plot(NW.aov, 1)
+leveneTest(nodule_wt  ~  treatment*species, data = Wits_biomass)
+```
+__AG wt__
+```{r,results='asis',echo=FALSE}
+hist(Wits_biomass$AG_wt)
+log_N<-log10(Wits_biomass$AG_wt)
+hist(log_N)
+A.aov <- aov(log_N~ treatment+species+(1|plot_rep) , data = Wits_biomass)
+summary(A.aov)
+TukeyHSD(A.aov)
+model.tables(A.aov, "means")
+plot(A.aov, 1)
+leveneTest(AG_wt  ~  treatment*species, data = Wits_biomass)
+```
+__BG wt__
+```{r,results='asis',echo=FALSE}
+hist(Wits_biomass$BG_wt)
+log_N<-log10(Wits_biomass$BG_wt)
+hist(log_N)
+B.aov <- aov(log_N~ treatment+species+(1|plot_rep) , data = Wits_biomass)
+summary(B.aov)
+TukeyHSD(B.aov)
+model.tables(B.aov, "means")
+plot(B.aov, 1)
+leveneTest(BG_wt ~  treatment*species, data = Wits_biomass)
+```
+_Total DW_
+```{r,results='asis',echo=FALSE}
+hist(Wits_biomass$Total_wt)
+log_N<-sqrt(Wits_biomass$Total_wt)
+hist(log_N)
+R.aov <- aov(log_N~ treatment+species+(1|plot_rep) , data = Wits_biomass)
+summary(R.aov)
+TukeyHSD(R.aov)
+model.tables(R.aov, "means")
+plot(R.aov, 1)
+leveneTest(log_N  ~  treatment*species, data = Wits_biomass)
+```
+_R:S ratio_
+```{r,results='asis',echo=FALSE}
+hist(Wits_biomass$ratio)
+log_N<-sqrt(Wits_biomass$ratio)
+hist(log_N)
+RS.aov <- aov(log_N~ treatment+species+(1|plot_rep) , data = Wits_biomass)
+summary(RS.aov)
+TukeyHSD(RS.aov)
+model.tables(RS.aov, "means")
+plot(RS.aov, 1)
+leveneTest(log_N  ~  treatment*species, data = Wits_biomass)
+```
+
+__Nodule Count__
+```{r, results='asis',echo=FALSE}
+t6<-print(xtable(N.aov), type = "html", head= "Nodule Count")
+```
+__Nodule Weight (grams)__
+```{r, results='asis',echo=FALSE}
+t6<-print(xtable(NW.aov), type = "html", head= "Nodule Weight (grams)")
+```
+__Whole Biomass (grams)__
+```{r, results='asis',echo=FALSE}
+t6<-print(xtable(R.aov), type = "html", head= "Biological Nitrogen fixation")
+```
+__Root: Shoot ratio__
+```{r, results='asis',echo=FALSE}
+t2<-print(xtable(N15.aov), type = "html", head ="Leaf 15N")
+```
+
+
+
+___jfjks__
+
+
+
+
+__Leaf 15N__
+```{r, results='asis',echo=FALSE}
+t2<-print(xtable(N15.aov), type = "html", head ="Leaf 15N")
+```
+__Leaf N__
+```{r, results='asis',echo=FALSE}
+t4<-print(xtable(N.aov), type = "html", head= "Leaf N")
+```
+__Leaf C__
+```{r, results='asis',echo=FALSE}
+t5<-print(xtable(C.aov), type = "html", head= "Leaf C")
+```
+__Leaf C:N__
+```{r, results='asis',echo=FALSE}
+t6<-print(xtable(CN.aov), type = "html", head= "Leaf C:N")
+```
+
+####finish 
