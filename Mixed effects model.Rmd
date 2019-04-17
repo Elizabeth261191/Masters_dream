@@ -1,0 +1,77 @@
+---
+title: "Mixed effects model"
+author: "Elizabeth Telford"
+date: "11 February 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(readr)
+library(ggplot2)
+library(lme4)
+library(xtable)
+library(stargazer)
+Height <- read_csv("C:/Users/s1014831/Desktop/Statistics/Height.csv")
+
+
+VS<-subset(Height, Species=="VS")
+VE<-subset(Height, Species=="VE")
+
+theme.clean <- function(){
+  theme_bw()+
+    theme(axis.text.x = element_text(size = 12, angle = 0, vjust = 1, hjust = 1),
+          axis.text.y = element_text(size = 12),
+          axis.title.x = element_text(size = 12, face = "plain"),             
+          axis.title.y = element_text(size = 12, face = "plain"),             
+          panel.grid.major.x = element_blank(),                                          
+          panel.grid.minor.x = element_blank(),
+          panel.grid.minor.y = element_blank(),
+          panel.grid.major.y = element_blank(),  
+          plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), units = , "cm"),
+          plot.title = element_text(size = 20, vjust = 1, hjust = 0.5),
+          legend.text = element_text(size = 12, face = "italic"),          
+          legend.title = element_blank(),                              
+          legend.position = c(0.1, 0.8))
+}
+
+#one issue to sort is getting a unique identifier for each individual
+Height$IndividualID <- as.factor(paste(as.character(Height$Tag),as.character(Height$Pot),sep="_")) 
+summary(Height)
+
+Height$Treatment <- factor(Height$Treatment, levels=c('4%','8%','16%'))
+
+
+H3<-subset(Height, Harvest == "3")
+VS<-subset(H3, Species=="VS")
+VE<-subset(H3, Species=="VE")
+
+```
+
+
+___V. sieberiana__
+```{r, results='asis'}
+VS_Week <- lmer(Height ~ Week + (1|IndividualID),data= VS)
+VS_Week_Treatment <- lmer(Height ~ Treatment + Week + (1|IndividualID),data= VS)
+
+stargazer(VS_Week_Treatment, type = "html",
+          digits = 3,
+          star.cutoffs = c(0.05, 0.01, 0.001),
+          digit.separator = "")
+
+A5<-anova(VS_Week,VS_Week_Treatment)
+t6<-print(xtable(A5), type = "html", head= "VS Height (mm)")
+
+#VE
+VE_Week<-lmer(Height~Week+ (1|IndividualID),data= VE)
+VE_Week_Treatment<- lmer(Height ~ Treatment+Week + (1|IndividualID),data= VE)
+
+stargazer(VE_Week_Treatment, type = "html",
+          digits = 3,
+          star.cutoffs = c(0.05, 0.01, 0.001),
+          digit.separator = "")
+
+A5<-anova(VE_Week,VE_Week_Treatment)
+t6<-print(xtable(A5), type = "html", head= "VE Height (mm)")
+
+
+```

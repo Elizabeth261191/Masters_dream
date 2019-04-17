@@ -1,0 +1,748 @@
+---
+title: "ANOVA"
+author: "Elizabeth Telford"
+date: "29 January 2019"
+output: html_document
+---
+
+```{r,echo=FALSE}
+library(ggplot2)
+library(colorspace)
+library(readr)
+library(xtable)
+library(data.table)
+library(car)
+library(stargazer)
+
+
+
+theme.clean <- function(){
+  theme_bw()+
+    theme(axis.text.x = element_text(size = 12, angle = 0, vjust = 1, hjust = 1),
+          axis.text.y = element_text(size = 12),
+          axis.title.x = element_text(size = 12, face = "plain"),             
+          axis.title.y = element_text(size = 12, face = "plain"),             
+          panel.grid.major.x = element_blank(),                                          
+          panel.grid.minor.x = element_blank(),
+          panel.grid.minor.y = element_blank(),
+          panel.grid.major.y = element_blank(),  
+          plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), units = , "cm"),
+          plot.title = element_text(size = 20, vjust = 1, hjust = 0.5),
+          legend.text = element_text(size = 12, face = "italic"),          
+          legend.title = element_blank(),                              
+          legend.position = c(0.9, 0.9))
+}
+
+stable_iso_area <- read_csv("C:/Users/s1014831/Desktop/Statistics/stable_iso_area.csv")
+VS<-subset(stable_iso_area, Species == 'VS')
+VE<-subset(stable_iso_area, Species == 'VE')
+iso<-stable_iso_area
+
+LabHarvestCSV <- read_csv("C:/Users/s1014831/Desktop/Statistics/LabHarvestCSV.csv")
+LabHarvest<-LabHarvestCSV
+LabHarvest<-na.omit(LabHarvest)
+LabHarvest$Treatment <- factor(LabHarvest$Treatment, levels=c('4%','8%','16%'))
+LabHarvest$Species<-factor(LabHarvest$Species, levels=c('VS','VE'))
+LabHarvest$Harvest<-as.factor(LabHarvest$Harvest)
+LabHarvest$Tag<-as.factor(LabHarvest$Tag)
+LabHarvest$Treatment<-as.factor(LabHarvest$Treatment)
+LabHarvest_VS<-subset(LabHarvest, Species=="VS")
+LabHarvest_VE<-subset(LabHarvest, Species=="VE")
+
+```
+
+#2 way ANOVA for LMA and foliage biochemical traits 
+
+##LMA
+```{r,echo=FALSE}
+#using an ANOVA for H3 SLA 
+hist(VS$SLA)
+#left skewed
+log_SLA<-log(VS$SLA)
+hist(log_SLA)
+SLA.aov <- aov(log_SLA ~ Treatment , data = VS)
+summary(SLA.aov)
+TukeyHSD(SLA.aov)
+model.tables(SLA.aov, "means")
+plot(SLA.aov, 1)
+#3 outliers
+leveneTest(log_SLA~ Treatment, data = VS)
+
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+##LMA
+```{r,echo=FALSE}
+#using an ANOVA for H3 SLA 
+hist(VE$SLA)
+#left skewed
+log_SLA<-sqrt(VE$SLA)
+hist(log_SLA)
+SLA.aov.ve <- aov(log_SLA ~ Treatment , data = VE)
+summary(SLA.aov.ve)
+TukeyHSD(SLA.aov.ve)
+model.tables(SLA.aov.ve, "means")
+plot(SLA.aov.ve, 1)
+#3 outliers
+leveneTest(log_SLA~ Treatment, data = VE)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+##15N
+```{r,echo=FALSE}
+hist(VS$delta15N)
+log_15N<-sqrt(VS$delta15N)
+hist(log_15N)
+N15.aov <- aov(log_15N ~ Treatment , data = VS)
+summary(N15.aov)
+model.tables(N15.aov, "means")
+TukeyHSD(N15.aov)
+plot(N15.aov, 1)
+#3 outliers
+leveneTest(log_15N~ Treatment , data = VS)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+
+##15N
+```{r,echo=FALSE}
+hist(VE$delta15N)
+log_15N<-log10(VE$delta15N)
+hist(log_15N)
+N15.aov.ve <- aov(log_15N ~ Treatment , data = VE)
+summary(N15.aov.ve)
+model.tables(N15.aov.ve, "means")
+TukeyHSD(N15.aov.ve)
+plot(N15.aov.ve, 1)
+#3 outliers
+leveneTest(log_15N~ Treatment , data = VE)
+```
+
+
+##13C
+```{r,echo=FALSE}
+hist(VS$delta13C)
+log_13C<-sqrt(VE$delta13C)
+C13.aov <- aov(delta13C ~ Treatment , data = VS)
+summary(C13.aov)
+model.tables(C13.aov, "means")
+TukeyHSD(C13.aov)
+plot(C13.aov, 1)
+#3 outliers
+leveneTest(delta13C~ Treatment*Species , data = iso)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+##13C
+```{r,echo=FALSE}
+#using an ANOVA for H3 13C
+hist(VE$delta13C)
+#left skewed
+#cannot log as the data is negative 
+C13.aov.ve <- aov(delta13C ~ Treatment , data = VE)
+summary(C13.aov.ve)
+model.tables(C13.aov.ve, "means")
+TukeyHSD(C13.aov.ve)
+plot(C13.aov.ve, 1)
+#3 outliers
+leveneTest(delta13C~ Treatment , data = VE)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+##N
+```{r, echo=FALSE}
+#using an ANOVA for H3 N
+hist(VS$N)
+log_N<-log10(VS$N)
+hist(log_N)
+N.aov <- aov(log_N ~ Treatment , data = VS)
+summary(N.aov)
+model.tables(N.aov, "means")
+TukeyHSD(N.aov)
+plot(N.aov, 1)
+#3 outliers
+leveneTest(N~ Treatment , data = VS)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+##N
+```{r, echo=FALSE}
+hist(VE$N)
+log_N<-log(VE$N)
+hist(log_N)
+N.aov.ve <- aov(N ~ Treatment , data = VE)
+summary(N.aov.ve)
+model.tables(N.aov.ve, "means")
+TukeyHSD(N.aov.ve)
+plot(N.aov.ve, 1)
+#3 outliers
+leveneTest(N~ Treatment , data = VE)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+##c
+```{r, echo=FALSE}
+#using an ANOVA for H3 C
+hist(VS$C)
+#left skewed
+log_C<-sqrt(VS$C)
+hist(log_C)
+#cannot log as the data is negative 
+C.aov <- aov(C ~ Treatment , data = VS)
+summary(C.aov)
+model.tables(C.aov, "means")
+TukeyHSD(C.aov)
+plot(C.aov, 1)
+#3 outliers
+leveneTest(C~ Treatment , data = VS)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+
+##C
+```{r, echo=FALSE}
+#using an ANOVA for H3 C
+hist(VE$C)
+#left skewed
+log_C<-log10(VE$C)
+hist(log_C)
+#cannot log as the data is negative 
+C.aov.ve <- aov(C ~ Treatment , data = VE)
+summary(C.aov.ve)
+model.tables(C.aov.ve, "means")
+TukeyHSD(C.aov.ve)
+plot(C.aov.ve, 1)
+#3 outliers
+leveneTest(C~ Treatment , data = VE)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+
+##C:N
+```{r,echo=FALSE}
+#using an ANOVA for H3 C:N ratio
+hist(VS$CN_ratio)
+#left skewed
+log_CN<-sqrt(VS$CN_ratio)
+hist(log_CN)
+CN.aov <- aov(log_CN ~ Treatment , data = VS)
+summary(CN.aov)
+model.tables(CN.aov, "means")
+TukeyHSD(CN.aov)
+plot(CN.aov, 1)
+#3 outliers
+leveneTest(log_CN~ Treatment , data = VS)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+
+##C:N
+```{r,echo=FALSE}
+#using an ANOVA for H3 C:N ratio
+hist(VE$CN_ratio)
+#left skewed
+log_CN<-sqrt(VE$CN_ratio)
+hist(log_CN)
+#cannot log as the data is negative 
+CN.aov.ve <- aov(log_CN ~ Treatment , data = VE)
+summary(CN.aov.ve)
+model.tables(CN.aov.ve, "means")
+TukeyHSD(CN.aov.ve)
+plot(CN.aov.ve, 1)
+#3 outliers
+leveneTest(log_CN~ Treatment , data = VE)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+
+#Table of results
+
+__V.sieberiana Leaf Mass per Area (LMA)__
+```{r, results='asis',echo=FALSE}
+library(xtable)
+t1<-print(xtable(SLA.aov), type="html" )
+```
+__V.sieberiana Leaf 15N__
+```{r, results='asis',echo=FALSE}
+t2<-print(xtable(N15.aov), type = "html", head ="Leaf 15N")
+```
+__V.sieberiana Leaf 13C__
+```{r, results='asis',echo=FALSE}
+t3<-print(xtable(C13.aov), type = "html",head = "Leaf 13C")
+```
+__V.sieberiana Leaf N__
+```{r, results='asis',echo=FALSE}
+t4<-print(xtable(N.aov), type = "html", head= "Leaf N")
+```
+__V.sieberiana Leaf C__
+```{r, results='asis',echo=FALSE}
+t5<-print(xtable(C.aov), type = "html", head= "Leaf C")
+```
+__V.sieberiana Leaf C:N__
+```{r, results='asis',echo=FALSE}
+t6<-print(xtable(CN.aov), type = "html", head= "Leaf C:N")
+```
+
+
+###split
+
+
+__V.erioloba Leaf Mass per Area (LMA)__
+```{r, results='asis',echo=FALSE}
+library(xtable)
+t1<-print(xtable(SLA.aov.ve), type="html" )
+```
+__V.erioloba Leaf 15N__
+```{r, results='asis',echo=FALSE}
+t2<-print(xtable(N15.aov.ve), type = "html", head ="Leaf 15N")
+```
+__V.erioloba Leaf 13C__
+```{r, results='asis',echo=FALSE}
+t3<-print(xtable(C13.aov.ve), type = "html",head = "Leaf 13C")
+```
+__V.erioloba Leaf N__
+```{r, results='asis',echo=FALSE}
+t4<-print(xtable(N.aov.ve), type = "html", head= "Leaf N")
+```
+__V.erioloba Leaf C__
+```{r, results='asis',echo=FALSE}
+t5<-print(xtable(C.aov.ve), type = "html", head= "Leaf C")
+```
+__V.erioloba Leaf C:N__
+```{r, results='asis',echo=FALSE}
+t6<-print(xtable(CN.aov.ve), type = "html", head= "Leaf C:N")
+```
+
+```{r,echo=FALSE}
+#using an ANOVA for H3 C:N ratio
+hist(iso$CN_ratio)
+#left skewed
+log_CN<-log10(iso$CN_ratio)
+hist(log_CN)
+#cannot log as the data is negative 
+CN.aov.ve <- aov(log_CN ~ Treatment+ Species , data = iso)
+summary(CN.aov.ve)
+model.tables(CN.aov.ve, "means")
+TukeyHSD(CN.aov.ve)
+plot(CN.aov.ve, 1)
+#3 outliers
+leveneTest(log_CN~ Treatment*Species , data = iso)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+```{r,echo=FALSE}
+#using an ANOVA for H3 C:N ratio
+#left skewed
+log_CN<-log10(iso$CN_ratio)
+hist(log_CN)
+#cannot log as the data is negative 
+CN.aov.ve <- aov(log_CN ~ Treatment+ Species , data = iso)
+summary(CN.aov.ve)
+model.tables(CN.aov.ve, "means")
+TukeyHSD(CN.aov.ve)
+plot(CN.aov.ve, 1)
+#3 outliers
+leveneTest(log_CN~ Treatment*Species , data = iso)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+
+```{r,echo=FALSE}
+#using an ANOVA for H3 13C
+hist(iso$delta13C)
+C13.aov.ve <- aov(delta13C ~ Treatment + Species , data = iso)
+summary(C13.aov.ve)
+model.tables(C13.aov.ve, "means")
+TukeyHSD(C13.aov.ve)
+plot(C13.aov.ve, 1)
+#3 outliers
+leveneTest(delta13C~ Treatment*Species , data = iso)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+```{r,echo=FALSE}
+#using an ANOVA for H3 13C
+hist(iso$N)
+N.aov.ve <- aov(N ~ Treatment + Species , data = iso)
+summary(N.aov.ve)
+model.tables(N.aov.ve, "means")
+TukeyHSD(N.aov.ve)
+plot(N.aov.ve, 1)
+#3 outliers
+leveneTest(N~ Treatment*Species , data = iso)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+
+
+###13c and c:N 
+
+__Leaf 13C__
+```{r, results='asis',echo=FALSE}
+t6<-print(xtable(C13.aov.ve), type = "html", head= "Nodule Count")
+```
+__Leaf C:N ratio__
+```{r, results='asis',echo=FALSE}
+t6<-print(xtable(CN.aov.ve), type = "html", head= "Nodule Weight (grams)")
+```
+__Leaf N__
+```{r, results='asis',echo=FALSE}
+t6<-print(xtable(N.aov.ve), type = "html", head= "Nodule Weight (grams)")
+```
+
+
+
+##growth
+
+```{r, echo=FALSE}
+LabHarvestCSV <- read_csv("C:/Users/s1014831/Desktop/LabHarvestCSV.csv")
+
+LabHarvest<-LabHarvestCSV
+#using an ANOVA for H3 SLA 
+hist(LabHarvest$Height)
+#left skewed
+log_TDW<-sqrt(LabHarvest$Height)
+hist(log_TDW)
+TDW.aov <- aov(log_TDW ~ Treatment*Species*Harvest , data = LabHarvest)
+summary(TDW.aov)
+TukeyHSD(TDW.aov)
+model.tables(TDW.aov, "means")
+plot(TDW.aov, 1)
+#3 outliers
+leveneTest(log_TDW~ Treatment*Species*Harvest, data = LabHarvest)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+
+##Below ground 
+```{r, echo=FALSE}
+LabHarvestCSV <- read_csv("C:/Users/s1014831/Desktop/LabHarvestCSV.csv")
+
+LabHarvest<-LabHarvestCSV
+H3<- subset(LabHarvest, Harvest=="H3")
+hist(H3$BG_DW)
+#left skewed
+log_BGW<-log10(H3$BG_DW)
+hist(log_BGW)
+
+BGW.aov <- aov(log_BGW ~ Treatment + Species , data = H3)
+summary(BGW.aov)
+TukeyHSD(BGW.aov)
+model.tables(BGW.aov, "means")
+plot(BGW.aov, 1)
+#3 outliers
+leveneTest(log_BGW ~ Treatment * Species, data = H3)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+##Below ground 
+```{r, echo=FALSE}
+hist(H3$R_S)
+#left skewed
+log_AGW<-log2(H3$R_S)
+hist(log_AGW)
+AGW.aov <- aov(log_AGW ~ Treatment + Species , data = H3)
+summary(AGW.aov)
+TukeyHSD(AGW.aov)
+model.tables(AGW.aov, "means")
+plot(AGW.aov, 1)
+#3 outliers
+leveneTest(log_AGW ~ Treatment * Species, data = H3)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+```{r,echo=FALSE}
+#using an ANOVA for H3 SLA 
+hist(iso$SLA)
+#left skewed
+log_SLA<-sqrt(iso$SLA)
+hist(log_SLA)
+SLA.aov.ve <- aov(log_SLA ~ Treatment + Species , data = iso)
+summary(SLA.aov.ve)
+TukeyHSD(SLA.aov.ve)
+model.tables(SLA.aov.ve, "means")
+plot(SLA.aov.ve, 1)
+#3 outliers
+leveneTest(log_SLA~ Treatment* Species, data = iso)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+__Belowground dry weight (grams)__
+```{r, results='asis',echo=FALSE}
+t6<-print(xtable(AGW.aov), type = "html", head= "Plant Weight (g)")
+```
+__Root: Shoot ratio__
+```{r, results='asis',echo=FALSE}
+t6<-print(xtable(BGW.aov), type = "html", head= "V.sieberiana Belowground dry weight (grams)")
+```
+__Leaf Mass per Area__
+```{r, results='asis',echo=FALSE}
+t6<-print(xtable(SLA.aov.ve), type = "html", head= "V.sieberiana Belowground dry weight (grams)")
+```
+
+##break
+
+
+__Nodule Count__
+```{r,results='asis',echo=FALSE}
+hist(LabHarvest_VS$Nodule)
+#left skewed
+log_N<-sqrt(LabHarvest_VS$Nodule)
+hist(log_N)
+N.aov <- aov(log_N~ Treatment + Harvest , data = LabHarvest_VS)
+summary(N.aov)
+TukeyHSD(N.aov)
+model.tables(N.aov, "means")
+plot(N.aov, 1)
+#3 outliers
+leveneTest(Nodule~ Treatment*Harvest, data = LabHarvest_VS)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+__Nodule Weight__
+```{r,results='asis',echo=FALSE}
+hist(LabHarvest_VS$Nodules_W)
+#left skewed
+log_N<-log(LabHarvest_VS$Nodules_W)
+hist(log_N)
+Nw.aov <- aov(log_N~ Treatment + Harvest , data = LabHarvest_VS)
+summary(Nw.aov)
+TukeyHSD(Nw.aov)
+model.tables(Nw.aov, "means")
+plot(Nw.aov, 1)
+#3 outliers
+leveneTest(Nodules_W~ Treatment*Harvest, data = LabHarvest_VS)
+```
+__Biological Nitrogen Fixation__
+```{r,results='asis',echo=FALSE}
+SI_VS<-subset(iso, Species=="VS")
+#using an ANOVA for H3 BNF
+hist(SI_VS$Nf)
+#left skewed
+log_Nf<-sqrt(SI_VS$Nf)
+hist(log_Nf)
+BNF.aov <- aov(log_Nf ~ Treatment , data = SI_VS)
+summary(BNF.aov)
+TukeyHSD(BNF.aov)
+model.tables(BNF.aov, "means")
+plot(BNF.aov, 1)
+#3 outliers
+leveneTest(log_Nf~ Treatment, data = SI_VS)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+
+__Biological Nitrogen Fixation__
+```{r,results='asis',echo=FALSE}
+SI_VS<-subset(iso, Species=="VS")
+#using an ANOVA for H3 BNF
+hist(iso$delta15N)
+#left skewed
+log_Nf<-log10(iso$delta15N)
+hist(log_Nf)
+N15.aov <- aov(log_Nf ~ Treatment+ Species , data = iso)
+summary(N15.aov)
+TukeyHSD(N15.aov)
+model.tables(N15.aov, "means")
+plot(N15.aov, 1)
+#3 outliers
+leveneTest(log_Nf~ Treatment*Species, data = iso)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+
+__Nodule Count__
+```{r, results='asis',echo=FALSE}
+t6<-print(xtable(N.aov), type = "html", head= "Nodule Count")
+```
+__Nodule Weight (grams)__
+```{r, results='asis',echo=FALSE}
+t6<-print(xtable(Nw.aov), type = "html", head= "Nodule Weight (grams)")
+```
+__Leaf 15N__
+```{r, results='asis',echo=FALSE}
+t6<-print(xtable(N15.aov), type = "html", head= "Biological Nitrogen fixation")
+```
+__Biological Nitrogen Fixation__
+```{r, results='asis',echo=FALSE}
+t6<-print(xtable(BNF.aov), type = "html", head= "Biological Nitrogen fixation")
+```
+
+
+
+##break
+
+
+```{r, results='asis'}
+stargazer(N.aov, type = "html",
+          digits = 3,
+          star.cutoffs = c(0.05, 0.01, 0.001),
+          digit.separator = "")
+```
+
+__Looking at the LICOR data__
+```{r,echo=FALSE}
+LICOR <- read_csv("C:/Users/s1014831/Desktop/Statistics/LICOR.csv")
+LICOR$Treatment <- factor(LICOR$Treatment, levels=c('4%','8%','16%'))
+LICOR$Species <- factor(LICOR$Species, levels=c('VS','VE'))
+LICOR<-na.omit(LICOR)
+VS<-subset(LICOR, Species == 'VS')
+VE<-subset(LICOR, Species == 'VE')
+```
+__LSA (mm2) VS__
+```{r,results='asis',echo=FALSE}
+hist(VS$Leaf_Area)
+log_LSA<-log10(VS$Leaf_Area)
+hist(log_LSA)
+LSA.aov <- aov(log_LSA ~ Treatment + Harvest , data = VS)
+summary(LSA.aov)
+TukeyHSD(LSA.aov)
+model.tables(LSA.aov, "means")
+plot(LSA.aov, 1)
+#3 outliers
+leveneTest(log_LSA~ Treatment*Harvest, data = VS)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+__LSA (mm2) VE__
+```{r,results='asis',echo=FALSE}
+hist(VE$Leaf_Area)
+log_LSA<-log10(VE$Leaf_Area)
+hist(log_LSA)
+LSA.aov.ve <- aov(log_LSA ~ Treatment + Harvest , data = VE)
+summary(LSA.aov.ve)
+TukeyHSD(LSA.aov)
+model.tables(LSA.aov.ve, "means")
+plot(LSA.aov.ve, 1)
+#3 outliers
+leveneTest(log_LSA~ Treatment*Harvest, data = VE)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+__Ci (umol mol) VS__
+```{r,results='asis',echo=FALSE}
+hist(VS$Ci_Ca)
+log_Ci<-log2(VS$Ci_Ca)
+hist(log_Ci)
+Ci.aov <- aov(log_Ci ~ Treatment + Harvest , data = VS)
+summary(Ci.aov)
+TukeyHSD(Ci.aov)
+model.tables(Ci.aov, "means")
+plot(Ci.aov, 1)
+#3 outliers
+leveneTest(log_Ci~ Treatment * Harvest, data = VS)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+
+__Ci (umol mol) VE__
+```{r,results='asis',echo=FALSE}
+hist(VE$Ci_Ca)
+#left skewed
+log_Ci<-sqrt(VE$Ci_Ca)
+hist(log_Ci)
+Ci.aov.ve <- aov(log_Ci ~ Treatment + Harvest , data = VE)
+summary(Ci.aov.ve)
+TukeyHSD(Ci.aov.ve)
+model.tables(Ci.aov.ve, "means")
+plot(Ci.aov.ve, 1)
+#3 outliers
+leveneTest(log_Ci~ Treatment*Harvest, data = VE)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+__Amax (umol m-2 s-1) VS__
+```{r,results='asis',echo=FALSE}
+hist(VS$Amax)
+#left skewed
+log_Amax<-log2(VS$Amax)
+hist(log_Amax)
+Amax.aov <- aov(log_Amax ~ Treatment + Harvest , data = VS)
+summary(Amax.aov)
+TukeyHSD(Amax.aov)
+model.tables(Amax.aov, "means")
+plot(Amax.aov, 1)
+#3 outliers
+leveneTest(log_Amax~ Treatment*Harvest*Species, data = VS)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+__Amax (umol m-2 s-1) VE__
+```{r,results='asis',echo=FALSE}
+hist(VE$Amax)
+#left skewed
+log_Amax<-log(VE$Amax)
+hist(log_Amax)
+Amax.aov.ve <- aov(log_Amax ~ Treatment + Harvest , data = VE)
+summary(Amax.aov.ve)
+TukeyHSD(Amax.aov.ve)
+model.tables(Amax.aov.ve, "means")
+plot(Amax.aov.ve, 1)
+#3 outliers
+leveneTest(log_Amax~ Treatment*Harvest*Species, data = VE)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+__V.sieberiana LSA (mm2)__
+```{r, results='asis',echo=FALSE}
+t6<-print(xtable(LSA.aov), type = "html", head= "V.sieberiana LSA (mm2)")
+```
+__V.sieberiana Ci:Ca__
+```{r, results='asis',echo=FALSE}
+t6<-print(xtable(Ci.aov), type = "html", head= "V.sieberiana Ci (umol mol)")
+```
+__V.sieberiana Amax (umol m-2 s-1)__
+```{r, results='asis',echo=FALSE}
+t6<-print(xtable(Amax.aov), type = "html", head= "V.sieberiana Amax (umol m-2 s-1)")
+```
+__V.erioloba LSA (mm2)__
+```{r, results='asis',echo=FALSE}
+t6<-print(xtable(LSA.aov.ve), type = "html", head= "V.erioloba LSA (mm2)")
+```
+__V.erioloba Ci:Ca__
+```{r, results='asis',echo=FALSE}
+t6<-print(xtable(Ci.aov.ve), type = "html", head= "V.erioloba Ci (umol mol)")
+```
+
+__V.erioloba Amax (umol m-2 s-1)__
+```{r, results='asis',echo=FALSE}
+t6<-print(xtable(Amax.aov.ve), type = "html", head= "V.sieberiana Amax (umol m-2 s-1)")
+```
+
+
+__LSA (mm2) VS__
+```{r,results='asis',echo=FALSE}
+L3<-subset(LICOR, Harvest =="H3")
+hist(L3$Leaf_Area)
+log_LSA<-log10(L3$Leaf_Area)
+hist(log_LSA)
+LSA.aov <- aov(log_LSA ~ Treatment + Species , data = L3)
+summary(LSA.aov)
+TukeyHSD(LSA.aov)
+model.tables(LSA.aov, "means")
+plot(LSA.aov, 1)
+#3 outliers
+leveneTest(log_LSA~ Treatment*Species, data = L3)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+
+__Ci (umol mol) VE__
+```{r,results='asis',echo=FALSE}
+hist(L3$Ci_Ca)
+#left skewed
+log_Ci<-sqrt(L3$Ci_Ca)
+hist(log_Ci)
+Ci.aov.ve <- aov(log_Ci ~ Treatment + Species , data = L3)
+summary(Ci.aov.ve)
+TukeyHSD(Ci.aov.ve)
+model.tables(Ci.aov.ve, "means")
+plot(Ci.aov.ve, 1)
+#3 outliers
+leveneTest(log_Ci~ Treatment*Species, data = L3)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+__Amax (umol m-2 s-1) VS__
+```{r,results='asis',echo=FALSE}
+hist(L3$Amax)
+#left skewed
+log_Amax<-log2(L3$Amax)
+hist(log_Amax)
+Amax.aov <- aov(log_Amax ~ Treatment + Species , data = L3)
+summary(Amax.aov)
+TukeyHSD(Amax.aov)
+model.tables(Amax.aov, "means")
+plot(Amax.aov, 1)
+#3 outliers
+leveneTest(log_Amax~ Treatment*Species, data = L3)
+# p-value <0.05 no evidence  that the variance across groups is statistically significant
+```
+__LSA (mm2)__
+```{r, results='asis',echo=FALSE}
+t6<-print(xtable(LSA.aov), type = "html", head= "V.erioloba LSA (mm2)")
+```
+__Ci:Ca__
+```{r, results='asis',echo=FALSE}
+t6<-print(xtable(Ci.aov.ve), type = "html", head= "V.erioloba Ci (umol mol)")
+```
+
+__Amax (umol m-2 s-1)__
+```{r, results='asis',echo=FALSE}
+t6<-print(xtable(Amax.aov), type = "html", head= "V.sieberiana Amax (umol m-2 s-1)")
+```
+
+
+
+
+##end
